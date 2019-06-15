@@ -35,14 +35,32 @@ enum NativeAdResult {
 /// * [HEIGHT_50] (Includes: Icon, Title, Context and CTA button)
 /// * [HEIGHT_100] (Includes: Icon, Title, Context and CTA button)
 /// * [HEIGHT_120] (Includes: Icon, Title, Context, Description and CTA button)
-class NativeBannerAdSize {
+class NativeBannerAdAndroidSize {
   final int height;
 
-  static const NativeBannerAdSize HEIGHT_50 = NativeBannerAdSize(height: 50);
-  static const NativeBannerAdSize HEIGHT_100 = NativeBannerAdSize(height: 100);
-  static const NativeBannerAdSize HEIGHT_120 = NativeBannerAdSize(height: 120);
+  static const NativeBannerAdAndroidSize HEIGHT_50 = NativeBannerAdAndroidSize(height: 50);
+  static const NativeBannerAdAndroidSize HEIGHT_100 = NativeBannerAdAndroidSize(height: 100);
+  static const NativeBannerAdAndroidSize HEIGHT_120 = NativeBannerAdAndroidSize(height: 120);
 
-  const NativeBannerAdSize({this.height});
+  const NativeBannerAdAndroidSize({this.height});
+}
+
+class NativeBannerAdIOSSize {
+  final int height;
+
+  static const NativeBannerAdIOSSize HEIGHT_100 = NativeBannerAdIOSSize(height: 100);
+  static const NativeBannerAdIOSSize HEIGHT_120 = NativeBannerAdIOSSize(height: 120);
+
+  const NativeBannerAdIOSSize({this.height});
+}
+
+class NativeAdIOSSize {
+  final int height;
+
+  static const NativeAdIOSSize HEIGHT_300 = NativeAdIOSSize(height: 300);
+  static const NativeAdIOSSize HEIGHT_400 = NativeAdIOSSize(height: 400);
+
+  const NativeAdIOSSize({this.height});
 }
 
 class FacebookNativeAd extends StatefulWidget {
@@ -58,14 +76,17 @@ class FacebookNativeAd extends StatefulWidget {
 
   /// If [adType] is [NativeAdType.NATIVE_BANNER_AD] you can choose between
   /// three predefined Ad sizes.
-  final NativeBannerAdSize bannerAdSize;
+  final NativeBannerAdAndroidSize bannerAdAndroidSize;
+
+  final NativeBannerAdIOSSize bannerAdIOSSize;
+  final NativeAdIOSSize adIOSSize;
 
   /// Recommended width is between **280-500** for Native Ads. You can use
   /// [double.infinity] as the width to match the parent widget width.
   final double width;
 
   /// Recommended width is between **250-500** for Native Ads. Native Banner Ad
-  /// height is predefined in [bannerAdSize] and cannot be
+  /// height is predefined in [bannerAdAndroidSize] and cannot be
   /// changed through this parameter.
   final double height;
 
@@ -94,7 +115,9 @@ class FacebookNativeAd extends StatefulWidget {
     this.placementId = "YOUR_PLACEMENT_ID",
     this.listener,
     @required this.adType,
-    this.bannerAdSize = NativeBannerAdSize.HEIGHT_50,
+    this.bannerAdAndroidSize = NativeBannerAdAndroidSize.HEIGHT_50,
+    this.bannerAdIOSSize = NativeBannerAdIOSSize.HEIGHT_100,
+    this.adIOSSize = NativeAdIOSSize.HEIGHT_300,
     this.width = double.infinity,
     this.height = 250,
     this.backgroundColor,
@@ -117,7 +140,7 @@ class _FacebookNativeAdState extends State<FacebookNativeAd> {
         width: widget.width,
         height: widget.adType == NativeAdType.NATIVE_AD
             ? widget.height
-            : widget.bannerAdSize.height.toDouble(),
+            : widget.bannerAdAndroidSize.height.toDouble(),
         child: AndroidView(
           viewType: NATIVE_AD_CHANNEL,
           onPlatformViewCreated: _onNativeAdViewCreated,
@@ -128,7 +151,7 @@ class _FacebookNativeAdState extends State<FacebookNativeAd> {
                 widget.adType == NativeAdType.NATIVE_BANNER_AD ? true : false,
             // height param is only for Banner Ads. Native Ad's height is
             // governed by container.
-            "height": widget.bannerAdSize.height,
+            "height": widget.bannerAdAndroidSize.height,
             "bg_color": widget.backgroundColor == null
                 ? null
                 : _getHexStringFromColor(widget.backgroundColor),
@@ -153,8 +176,40 @@ class _FacebookNativeAdState extends State<FacebookNativeAd> {
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return Container(
         width: widget.width,
-        height: widget.height,
-        child: Text("Native Ads iOS is currently not supported."),
+        height: widget.adType == NativeAdType.NATIVE_AD
+            ? widget.height
+            : widget.bannerAdIOSSize.height.toDouble(),
+        child: UiKitView(
+          viewType: NATIVE_AD_CHANNEL,
+          onPlatformViewCreated: _onNativeAdViewCreated,
+          creationParamsCodec: StandardMessageCodec(),
+          creationParams: <String, dynamic>{
+            "id": widget.placementId,
+            "banner_ad":
+            widget.adType == NativeAdType.NATIVE_BANNER_AD ? true : false,
+            // height param is only for Banner Ads. Native Ad's height is
+            // governed by container.
+            "height": widget.adType == NativeAdType.NATIVE_BANNER_AD ? widget.bannerAdIOSSize : widget.adIOSSize,
+            "bg_color": widget.backgroundColor == null
+                ? null
+                : _getHexStringFromColor(widget.backgroundColor),
+            "title_color": widget.titleColor == null
+                ? null
+                : _getHexStringFromColor(widget.titleColor),
+            "desc_color": widget.descriptionColor == null
+                ? null
+                : _getHexStringFromColor(widget.descriptionColor),
+            "button_color": widget.buttonColor == null
+                ? null
+                : _getHexStringFromColor(widget.buttonColor),
+            "button_title_color": widget.buttonTitleColor == null
+                ? null
+                : _getHexStringFromColor(widget.buttonTitleColor),
+            "button_border_color": widget.buttonBorderColor == null
+                ? null
+                : _getHexStringFromColor(widget.buttonBorderColor),
+          },
+        ),
       );
     } else {
       return Container(

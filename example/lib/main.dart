@@ -202,7 +202,7 @@ class AdsPageState extends State<AdsPage> {
     setState(() {
       _currentAd = FacebookNativeAd(
         adType: NativeAdType.NATIVE_BANNER_AD,
-        bannerAdSize: NativeBannerAdSize.HEIGHT_100,
+        bannerAdAndroidSize: NativeBannerAdAndroidSize.HEIGHT_100,
         width: double.infinity,
         backgroundColor: Colors.blue,
         titleColor: Colors.white,
