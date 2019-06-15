@@ -1,7 +1,7 @@
 package com.andrehaueisen.facebook_audience
 
 internal object FacebookConstants {
-    val MAIN_CHANNEL = "fb.audience.network.io"
+    val MAIN_CHANNEL = "facebook_audience"
     val BANNER_AD_CHANNEL = "$MAIN_CHANNEL/bannerAd"
     val INTERSTITIAL_AD_CHANNEL = "$MAIN_CHANNEL/interstitialAd"
     val NATIVE_AD_CHANNEL = "$MAIN_CHANNEL/nativeAd"
