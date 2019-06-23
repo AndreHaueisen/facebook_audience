@@ -78,8 +78,7 @@ private class FacebookNativeAdView : NSObject, FBNativeAdDelegate, FlutterPlatfo
             
             let viewType = getNativeAdSize(args: self.args)
             let nativeAdView = FBNativeAdView.init(nativeAd: ad, with: viewType, with: getViewAttributes(args: self.args))
-            //nativeAdView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.width)
-            nativeAdView.frame = CGRect(x: 0, y: 0, width: 400, height: 400)
+            nativeAdView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.width)
             
             contentView.addSubview(nativeAdView)
 
@@ -116,6 +115,12 @@ private class FacebookNativeAdView : NSObject, FBNativeAdDelegate, FlutterPlatfo
         }
         if args["button_border_color"] != nil {
             viewAttributes.buttonBorderColor = UIColor.init(hex: args["button_border_color"] as! String)
+        }
+        if args["advertiser_name_color"] != nil {
+            viewAttributes.advertiserNameColor = UIColor.init(hex: args["advertiser_name_color"] as! String)
+        }
+        if args["choices_foreground_color"] != nil {
+            viewAttributes.adChoicesForegroundColor = UIColor.init(hex: args["choices_foreground_color"] as! String)
         }
         
         return viewAttributes
@@ -213,10 +218,10 @@ extension UIColor {
                 var hexNumber: UInt64 = 0
                 
                 if scanner.scanHexInt64(&hexNumber) {
-                    r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
-                    g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
-                    b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
-                    a = CGFloat(hexNumber & 0x000000ff) / 255
+                    a = CGFloat((hexNumber & 0xff000000) >> 24) / 255
+                    r = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
+                    g = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
+                    b = CGFloat(hexNumber & 0x000000ff) / 255
                     
                     self.init(red: r, green: g, blue: b, alpha: a)
                     return

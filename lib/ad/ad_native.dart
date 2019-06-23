@@ -113,6 +113,10 @@ class FacebookNativeAd extends StatefulWidget {
   /// This defines the button border color of the Native Ad.
   final Color buttonBorderColor;
 
+  final Color advertiserNameColor;
+
+  final Color choicesForegroundColor;
+
   /// This widget can be used to display customizable native ads and native
   /// banner ads. 
   FacebookNativeAd({
@@ -131,6 +135,8 @@ class FacebookNativeAd extends StatefulWidget {
     this.buttonColor,
     this.buttonTitleColor,
     this.buttonBorderColor,
+    this.advertiserNameColor,
+    this.choicesForegroundColor
   }) : super(key: key);
 
   @override
@@ -175,6 +181,12 @@ class _FacebookNativeAdState extends State<FacebookNativeAd> {
             "button_border_color": widget.buttonBorderColor == null
                 ? null
                 : _getHexStringFromColor(widget.buttonBorderColor),
+            "advertiser_name_color": widget.advertiserNameColor == null
+                ? null
+                : _getHexStringFromColor(widget.advertiserNameColor),
+            "choices_foreground_color": widget.choicesForegroundColor == null
+                ? null
+                : _getHexStringFromColor(widget.choicesForegroundColor)
           },
         ),
       );
@@ -195,23 +207,29 @@ class _FacebookNativeAdState extends State<FacebookNativeAd> {
             // governed by container.
             "height": widget.adType == NativeAdType.NATIVE_BANNER_AD ? widget.bannerAdIOSSize.height : widget.adIOSSize.height,
             "bg_color": widget.backgroundColor == null
-                ? Colors.black
+                ? _getHexStringFromColor(Colors.black)
                 : _getHexStringFromColor(widget.backgroundColor),
             "title_color": widget.titleColor == null
-                ? Colors.white
+                ? _getHexStringFromColor(Colors.white)
                 : _getHexStringFromColor(widget.titleColor),
             "desc_color": widget.descriptionColor == null
-                ? Colors.white
+                ? _getHexStringFromColor(Colors.white)
                 : _getHexStringFromColor(widget.descriptionColor),
             "button_color": widget.buttonColor == null
-                ? Colors.grey[900]
+                ? _getHexStringFromColor(Colors.grey[900])
                 : _getHexStringFromColor(widget.buttonColor),
             "button_title_color": widget.buttonTitleColor == null
-                ? Colors.white
+                ? _getHexStringFromColor(Colors.white)
                 : _getHexStringFromColor(widget.buttonTitleColor),
             "button_border_color": widget.buttonBorderColor == null
-                ? Colors.grey
+                ? _getHexStringFromColor(Colors.grey)
                 : _getHexStringFromColor(widget.buttonBorderColor),
+            "advertiser_name_color": widget.advertiserNameColor == null
+                ? _getHexStringFromColor(Colors.white)
+                : _getHexStringFromColor(widget.advertiserNameColor),
+            "choices_foreground_color": widget.choicesForegroundColor == null
+                ? _getHexStringFromColor(Colors.white)
+                : _getHexStringFromColor(widget.choicesForegroundColor)
           },
         ),
       );
