@@ -74,11 +74,16 @@ class FacebookNativeAd extends StatefulWidget {
   /// [NativeAdType.NATIVE_BANNER_AD]
   final NativeAdType adType;
 
-  /// If [adType] is [NativeAdType.NATIVE_BANNER_AD] you can choose between
+  /// If [adType] is [NativeAdType.NATIVE_BANNER_AD] for Android you can choose between
   /// three predefined Ad sizes.
   final NativeBannerAdAndroidSize bannerAdAndroidSize;
 
+  /// If [adType] is [NativeAdType.NATIVE_BANNER_AD] for iOS you can choose between
+  /// two predefined Ad sizes.
   final NativeBannerAdIOSSize bannerAdIOSSize;
+
+  /// If [adType] is [NativeAdType.NATIVE_AD] for iOS you can choose between
+  /// two predefined Ad sizes.
   final NativeAdIOSSize adIOSSize;
 
   /// Recommended width is between **280-500** for Native Ads. You can use
@@ -185,28 +190,27 @@ class _FacebookNativeAdState extends State<FacebookNativeAd> {
           creationParamsCodec: StandardMessageCodec(),
           creationParams: <String, dynamic>{
             "id": widget.placementId,
-            "banner_ad":
-            widget.adType == NativeAdType.NATIVE_BANNER_AD ? true : false,
+            "banner_ad": widget.adType == NativeAdType.NATIVE_BANNER_AD,
             // height param is only for Banner Ads. Native Ad's height is
             // governed by container.
-            "height": widget.adType == NativeAdType.NATIVE_BANNER_AD ? widget.bannerAdIOSSize : widget.adIOSSize,
+            "height": widget.adType == NativeAdType.NATIVE_BANNER_AD ? widget.bannerAdIOSSize.height : widget.adIOSSize.height,
             "bg_color": widget.backgroundColor == null
-                ? null
+                ? Colors.black
                 : _getHexStringFromColor(widget.backgroundColor),
             "title_color": widget.titleColor == null
-                ? null
+                ? Colors.white
                 : _getHexStringFromColor(widget.titleColor),
             "desc_color": widget.descriptionColor == null
-                ? null
+                ? Colors.white
                 : _getHexStringFromColor(widget.descriptionColor),
             "button_color": widget.buttonColor == null
-                ? null
+                ? Colors.grey[900]
                 : _getHexStringFromColor(widget.buttonColor),
             "button_title_color": widget.buttonTitleColor == null
-                ? null
+                ? Colors.white
                 : _getHexStringFromColor(widget.buttonTitleColor),
             "button_border_color": widget.buttonBorderColor == null
-                ? null
+                ? Colors.grey
                 : _getHexStringFromColor(widget.buttonBorderColor),
           },
         ),

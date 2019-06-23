@@ -16,7 +16,11 @@ A new flutter plugin project.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'FBAudienceNetwork'
-  s.swift_version = '4.0'
+  s.swift_version = '4.2'
+  s.preserve_paths = 'FBAudienceNetwork.framework'
+  s.xcconfig = { 'OTHER_LDFLAGS' => '-framework FBAudienceNetwork' }
+  s.vendored_frameworks = 'FBAudienceNetwork.framework'
+  s.static_framework = true
 
   s.ios.deployment_target = '9.0'
 end

@@ -7,7 +7,7 @@
 
 import Foundation
 import Flutter
-import FBAudienceNetwork
+import FBAudienceNetwork.FBAudienceNetworkAds
 
 
 public class FacebookNativeAdFactory : NSObject, FlutterPlatformViewFactory {
@@ -19,85 +19,43 @@ public class FacebookNativeAdFactory : NSObject, FlutterPlatformViewFactory {
     }
     
     public func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
-        return FacebookNativeAdView(viewId: viewId, args: args as! [String : Any], frame: frame, messenger: messenger)
+        return FacebookNativeAdView(viewId: viewId, args: args as? [String : Any] ?? [:], frame: frame, messenger: messenger)
+    }
+    
+    public func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
+        return FlutterStandardMessageCodec.sharedInstance()
     }
 }
 
-private class FacebookNativeAdView : UIView, FBNativeAdDelegate ,FBNativeBannerAdDelegate, FlutterPlatformView{
+private class FacebookNativeAdView : NSObject, FBNativeAdDelegate, FlutterPlatformView{
     
     private var nativeAd: FBNativeAd?
-    private var bannerAd: FBNativeBannerAd?
     private var channel: FlutterMethodChannel?
-    private var shouldSetupConstraints: Bool = true
     
-    private var viewId: Int64?
-    private var args: [String : Any]?
+    private let frame: CGRect
+    private let args: [String : Any]
+    let contentView: UIView;
     
     private var messenger: FlutterBinaryMessenger?
-    
-    //Views TODO see if they have any utility
-//    private var adIconImageView: FBAdIconView!
-//    private var adTitleLabel: UILabel!
-//    private var adCoverMediaView: FBMediaView!
-//    private var adSocialContext: UILabel!
-//    private var adCallToActionButton: UIButton!
-//    private var adChoicesView: FBAdChoicesView!
-//    private var adBodyLabel: UILabel!
-//    private var sponsoredLabel: UILabel!
-    
+
     required init(viewId: Int64, args: [String : Any], frame:CGRect, messenger: FlutterBinaryMessenger) {
-        super.init(frame: frame)
-        
-        self.viewId = viewId
         self.args = args
         self.frame = frame
         self.messenger = messenger
+        self.contentView = UIView(frame: frame)
         
-        channel = FlutterMethodChannel(name: FacebookConstants.NATIVE_AD_CHANNEL + "_" + String(self.viewId!), binaryMessenger: messenger)
+        super.init()
         
-        if self.args!["bannedAd"] as! Bool {
-            bannerAd = FBNativeBannerAd(placementID: self.args!["id"] as! String)
-            bannerAd!.delegate = self
-            bannerAd!.loadAd()
-        } else {
-            nativeAd = FBNativeAd(placementID: self.args!["id"] as! String)
-            nativeAd!.delegate = self
-            nativeAd!.loadAd()
-        }
-    }
-    
-    required init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        channel = FlutterMethodChannel(name: FacebookConstants.NATIVE_AD_CHANNEL as String + "_" + String(viewId), binaryMessenger: messenger)
+        
+        nativeAd = FBNativeAd.init(placementID: self.args["id"] as! String)
+        nativeAd!.delegate = self
+        nativeAd!.loadAd()
+        
     }
     
     func view() -> UIView {
-        return self
-    }
-    
-    override func updateConstraints() {
-        if(shouldSetupConstraints) {
-            // AutoLayout constraints
-            shouldSetupConstraints = false
-        }
-        super.updateConstraints()
-    }
-    
-    private func getBannerSize(args: [AnyHashable : Any]) -> FBNativeBannerAdViewType {
-        switch(args["height"] as! Int){
-        case 100: return FBNativeBannerAdViewType.genericHeight100
-        case 120: return FBNativeBannerAdViewType.genericHeight120
-        default:
-            return FBNativeBannerAdViewType.genericHeight120
-        }
-    }
-    
-    private func getNativeAdSize(args: [AnyHashable : Any]) -> FBNativeAdViewType {
-        switch(args["height"] as! Int){
-        case 300: return FBNativeAdViewType.genericHeight300
-        case 400: return FBNativeAdViewType.genericHeight400
-        default:
-            return FBNativeAdViewType.genericHeight400
-        }
+        return contentView
     }
     
     /**
@@ -111,25 +69,36 @@ private class FacebookNativeAdView : UIView, FBNativeAdDelegate ,FBNativeBannerA
         args["placement_id"] = ad.placementID
         args["invalidated"] = !ad.isAdValid
         
-        if self.subviews.count > 0 {
-            for view in self.subviews {
-                view.removeFromSuperview()
-            }
-        }
+        print("View loaded!")
+        self.nativeAd = ad
         
-        if(self.args!["banner_ad"] as! Bool){
-            self.addSubview(FBNativeBannerAdView.init(nativeBannerAd: bannerAd!, with: getBannerSize(args: self.args!), with: getViewAttributes(args: self.args!)))
-        } else {
-            self.addSubview(FBNativeAdView.init(nativeAd: nativeAd!
-                , with: getNativeAdSize(args: self.args!), with: getViewAttributes(args: self.args!)))
+    
+        if(ad.isAdValid){
+            self.nativeAd?.unregisterView()
+            
+            let viewType = getNativeAdSize(args: self.args)
+            let nativeAdView = FBNativeAdView.init(nativeAd: ad, with: viewType, with: getViewAttributes(args: self.args))
+            //nativeAdView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.width)
+            nativeAdView.frame = CGRect(x: 0, y: 0, width: 400, height: 400)
+            
+            contentView.addSubview(nativeAdView)
+
         }
-        
-        channel?.invokeMethod(FacebookConstants.LOADED_METHOD, arguments: args)
+
+        channel?.invokeMethod(FacebookConstants.LOADED_METHOD as String, arguments: args)
+    }
+    
+    private func getNativeAdSize(args: [AnyHashable : Any]) -> FBNativeAdViewType {
+        switch(args["height"] as! Int){
+        case 300: return FBNativeAdViewType.genericHeight300
+        case 400: return FBNativeAdViewType.genericHeight400
+        default:
+            return FBNativeAdViewType.genericHeight400
+        }
     }
     
     private func getViewAttributes(args: [AnyHashable : Any] ) -> FBNativeAdViewAttributes {
         let viewAttributes = FBNativeAdViewAttributes()
-        
         if args["bg_color"] != nil {
             viewAttributes.backgroundColor = UIColor.init(hex: args["bg_color"] as! String)
         }
@@ -160,7 +129,9 @@ private class FacebookNativeAdView : UIView, FBNativeAdDelegate ,FBNativeBannerA
         args["placement_id"] = ad.placementID
         args["invalidated"] = !ad.isAdValid
         
-        channel?.invokeMethod(FacebookConstants.MEDIA_DOWNLOADED_METHOD, arguments: args)
+        print("View downloaded!")
+        
+        channel?.invokeMethod(FacebookConstants.MEDIA_DOWNLOADED_METHOD as String, arguments: args)
     }
     
     /**
@@ -173,7 +144,9 @@ private class FacebookNativeAdView : UIView, FBNativeAdDelegate ,FBNativeBannerA
         args["placement_id"] = ad.placementID
         args["invalidated"] = !ad.isAdValid
         
-        channel?.invokeMethod(FacebookConstants.LOGGING_IMPRESSION_METHOD, arguments: args)
+        print("View impression loged!")
+        
+        channel?.invokeMethod(FacebookConstants.LOGGING_IMPRESSION_METHOD as String, arguments: args)
     }
     
     /**
@@ -189,7 +162,9 @@ private class FacebookNativeAdView : UIView, FBNativeAdDelegate ,FBNativeBannerA
         args["error_code"] = didFailWithError.code
         args["error_message"] = didFailWithError.description
         
-        channel?.invokeMethod(FacebookConstants.ERROR_METHOD, arguments: args)
+        print("View loade failed!")
+        
+        channel?.invokeMethod(FacebookConstants.ERROR_METHOD as String, arguments: args)
     }
     
     /**
@@ -202,7 +177,9 @@ private class FacebookNativeAdView : UIView, FBNativeAdDelegate ,FBNativeBannerA
         args["placement_id"] = ad.placementID
         args["invalidated"] = !ad.isAdValid
         
-        channel?.invokeMethod(FacebookConstants.CLICKED_METHOD, arguments: args)
+        print("View clicked!")
+        
+        channel?.invokeMethod(FacebookConstants.CLICKED_METHOD as String, arguments: args)
     }
     
     /**
@@ -213,8 +190,13 @@ private class FacebookNativeAdView : UIView, FBNativeAdDelegate ,FBNativeBannerA
      - Parameter nativeAd: An FBNativeAd object sending the message.
      */
     func nativeAdDidFinishHandlingClick (_ ad: FBNativeAd ){
-        // TODO see if this has any utility
+        print("Model view finished!")
     }
+    
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     
 }
 

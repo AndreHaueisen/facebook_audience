@@ -1,6 +1,6 @@
 import Flutter
 import UIKit
-import FBAudienceNetwork
+import FBAudienceNetwork.FBAudienceNetworkAds
 
 
 public class SwiftFacebookAudiencePlugin: NSObject, FlutterPlugin {
@@ -10,8 +10,10 @@ public class SwiftFacebookAudiencePlugin: NSObject, FlutterPlugin {
         // Main channel for initialization
         let channel = FlutterMethodChannel(name: FacebookConstants.MAIN_CHANNEL, binaryMessenger: registrar.messenger())
         
-        let delegate = FacebookAudiencePlugin()
-        registrar.addMethodCallDelegate(delegate, channel: channel)
+        let plugin = SwiftFacebookAudiencePlugin()
+        //registrar.addApplicationDelegate(delegate)
+        registrar.addApplicationDelegate(plugin)
+        registrar.addMethodCallDelegate(plugin, channel: channel)
         
         // interstitial ad channel
         //let interstitialAdChannel:FlutterMethodChannel = FlutterMethodChannel(name: FacebookConstants.INTERSTITIAL_AD_CHANNEL, binaryMessenger: registrar.messenger())
@@ -21,29 +23,29 @@ public class SwiftFacebookAudiencePlugin: NSObject, FlutterPlugin {
         //let rewardedAdChannel = FlutterMethodChannel(name: FacebookConstants.REWARDED_VIDEO_CHANNEL, binaryMessenger: registrar.messenger())
         //rewardedAdChannel.setMethodCallHandler(FacebookRewardedVideoAdPlugin())
         
-        registrar.register(FacebookNativeAdFactory(messenger: registrar.messenger()), withId: FacebookConstants.NATIVE_AD_CHANNEL)
+        let nativeAdFactory = FacebookNativeAdFactory(messenger: registrar.messenger())
         
-        let instance = FacebookAudiencePlugin()
-        registrar.addMethodCallDelegate(instance, channel: channel)
+        registrar.register(nativeAdFactory, withId: FacebookConstants.NATIVE_AD_CHANNEL)
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args = call.arguments as? NSDictionary
-        
+
         if call.method.elementsEqual(FacebookConstants.INIT_METHOD) {
-            let testingId: String? = args?["testingId"] as? String
+            let testingId: String = args?["testingId"] as? String ?? ""
+
+            //let settings = FBAdInitSettings.init()
+            //FBAudienceNetworkAds.initialize(with: settings, completionHandler: <#T##((FBAdInitResults) -> Void)?##((FBAdInitResults) -> Void)?##(FBAdInitResults) -> Void#>)
             
-            // TODO see if needs initializing
-            
-            if testingId != nil {
-                FBAdSettings.addTestDevice(testingId!)
-                result("iOS testingId: \(testingId!)")
-            } else {
-                result("iOS testingId is nil")
+            let settings = FBAdInitSettings.init(placementIDs: [testingId], mediationService: "facebook")
+            FBAudienceNetworkAds.initialize(with: settings) { (results) in
+                result(results.isSuccess)
             }
-            
+
+            result(true)
+
         } else {
-            result("Method not implemented")
+            result(false)
         }
     }
     

@@ -2,26 +2,30 @@ PODS:
   - facebook_audience (0.0.2):
     - FBAudienceNetwork
     - Flutter
-  - FBAudienceNetwork (5.3.2)
+  - FBAudienceNetwork (5.4.0):
+    - FBSDKCoreKit/Basics
+  - FBSDKCoreKit/Basics (5.1.0)
   - Flutter (1.0.0)
 
 DEPENDENCIES:
   - facebook_audience (from `.symlinks/plugins/facebook_audience/ios`)
-  - Flutter (from `.symlinks/flutter/ios-release`)
+  - Flutter (from `.symlinks/flutter/ios`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - FBAudienceNetwork
+    - FBSDKCoreKit
 
 EXTERNAL SOURCES:
   facebook_audience:
     :path: ".symlinks/plugins/facebook_audience/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios-release"
+    :path: ".symlinks/flutter/ios"
 
 SPEC CHECKSUMS:
-  facebook_audience: 5351b92fab37e94255526e2a171c384d1f4513c6
-  FBAudienceNetwork: f080b871e9b45f6ad67cf6c6e7d681dbe199fb47
+  facebook_audience: 11fd241c6d9d5f6b1a6b2e1b96bef9e991970f4a
+  FBAudienceNetwork: c1514860ed6d9ba9f97350f3fbb3ac49556f5e43
+  FBSDKCoreKit: 28abd87d7828faff0d75fda2ada31d279ec5eaba
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
 
 PODFILE CHECKSUM: 19a2edbcd05a6afa474f03c1b360b0920b8a5954

@@ -9,11 +9,11 @@ import Foundation
 
 class FacebookConstants {
     static let MAIN_CHANNEL:String = "facebook_audience"
-    static let BANNER_AD_CHANNEL:String = "\(MAIN_CHANNEL)/bannerAd"
-    static let INTERSTITIAL_AD_CHANNEL:String = "\(MAIN_CHANNEL)/interstitialAd"
-    static let NATIVE_AD_CHANNEL:String = "\(MAIN_CHANNEL)/nativeAd"
-    static let REWARDED_VIDEO_CHANNEL:String = "\(MAIN_CHANNEL)/rewardedAd"
-    static let IN_STREAM_VIDEO_CHANNEL:String = "\(MAIN_CHANNEL)/inStreamAd"
+    static let BANNER_AD_CHANNEL:String = "facebook_audience/bannerAd"
+    static let INTERSTITIAL_AD_CHANNEL:String = "facebook_audience/interstitialAd"
+    static let NATIVE_AD_CHANNEL:String = "facebook_audience/nativeAd"
+    static let REWARDED_VIDEO_CHANNEL:String = "facebook_audience/rewardedAd"
+    static let IN_STREAM_VIDEO_CHANNEL:String = "facebook_audience/inStreamAd"
     
     static let INIT_METHOD:String = "init"
     static let SHOW_INTERSTITIAL_METHOD:String = "showInterstitialAd"
