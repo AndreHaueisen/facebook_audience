@@ -54,27 +54,27 @@ class AdsPageState extends State<AdsPage> {
       testingId: "ee1c07ec-07cf-4cf8-bc31-fdf9100d8b17",
     );
 
-    //_loadInterstitialAd();
+    _loadInterstitialAd();
     //_loadRewardedVideoAd();
   }
 
-//  void _loadInterstitialAd() {
-//    FacebookInterstitialAd.loadInterstitialAd(
-//      placementId: "YOUR_PLACEMENT_ID",
-//      listener: (result, value) {
-//        print("Interstitial Ad: $result --> $value");
-//        if (result == InterstitialAdResult.LOADED)
-//          _isInterstitialAdLoaded = true;
-//        /// Once an Interstitial Ad has been dismissed and becomes invalidated,
-//        /// load a fresh Ad by calling this function.
-//        if (result == InterstitialAdResult.DISMISSED &&
-//            value["invalidated"] == true) {
-//          _isInterstitialAdLoaded = false;
-//          _loadInterstitialAd();
-//        }
-//      },
-//    );
-//  }
+  void _loadInterstitialAd() {
+    FacebookInterstitialAd.loadInterstitialAd(
+      placementId: "2308590955894730_2444757935611364",
+      listener: (result, value) {
+        print("Interstitial Ad: $result --> $value");
+        if (result == InterstitialAdResult.LOADED)
+          _isInterstitialAdLoaded = true;
+        /// Once an Interstitial Ad has been dismissed and becomes invalidated,
+        /// load a fresh Ad by calling this function.
+        if (result == InterstitialAdResult.DISMISSED &&
+            value["invalidated"] == true) {
+          _isInterstitialAdLoaded = false;
+          _loadInterstitialAd();
+        }
+      },
+    );
+  }
 
 //  void _loadRewardedVideoAd() {
 //    FacebookRewardedVideoAd.loadRewardedVideoAd(
@@ -133,8 +133,7 @@ class AdsPageState extends State<AdsPage> {
         //_getRaisedButton(title: "Banner Ad", onPressed: _showBannerAd),
         _getRaisedButton(title: "Native Ad", onPressed: _showNativeAd),
         _getRaisedButton(title: "Native Banner Ad", onPressed: _showNativeBannerAd),
-//        _getRaisedButton(
-//            title: "Intestitial Ad", onPressed: _showInterstitialAd),
+        _getRaisedButton(title: "Intestitial Ad", onPressed: _showInterstitialAd),
 //        _getRaisedButton(title: "Rewarded Ad", onPressed: _showRewardedAd),
 //        _getRaisedButton(title: "InStream Ad", onPressed: _showInStreamAd),
       ],
@@ -154,13 +153,13 @@ class AdsPageState extends State<AdsPage> {
     );
   }
 
-//  _showInterstitialAd() {
-//    if (_isInterstitialAdLoaded == true)
-//      FacebookInterstitialAd.showInterstitialAd();
-//    else
-//      print("Interstial Ad not yet loaded!");
-//  }
-//
+  _showInterstitialAd() {
+    if (_isInterstitialAdLoaded == true)
+      FacebookInterstitialAd.showInterstitialAd();
+    else
+      print("Interstial Ad not yet loaded!");
+  }
+
 //  _showRewardedAd() {
 //    if (_isRewardedAdLoaded == true)
 //      FacebookRewardedVideoAd.showRewardedVideoAd();

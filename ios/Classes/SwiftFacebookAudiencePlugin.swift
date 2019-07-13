@@ -14,17 +14,14 @@ public class SwiftFacebookAudiencePlugin: NSObject, FlutterPlugin {
         //registrar.addApplicationDelegate(delegate)
         registrar.addApplicationDelegate(plugin)
         registrar.addMethodCallDelegate(plugin, channel: channel)
-        
+
         // interstitial ad channel
-        //let interstitialAdChannel:FlutterMethodChannel = FlutterMethodChannel(name: FacebookConstants.INTERSTITIAL_AD_CHANNEL, binaryMessenger: registrar.messenger())
-        //interstitialAdChannel.setMethodCallHandler(FacebookInterstitialAdPlugin())
+        let viewController = UIApplication.shared.delegate!.window!!.rootViewController!
+        let interstitialAdChannel:FlutterMethodChannel = FlutterMethodChannel(name: FacebookConstants.INTERSTITIAL_AD_CHANNEL, binaryMessenger: registrar.messenger())
+        FacebookInterstitialAdPlugin(channel: interstitialAdChannel, viewController: viewController)
         
-        // rewarded video ad channel
-        //let rewardedAdChannel = FlutterMethodChannel(name: FacebookConstants.REWARDED_VIDEO_CHANNEL, binaryMessenger: registrar.messenger())
-        //rewardedAdChannel.setMethodCallHandler(FacebookRewardedVideoAdPlugin())
-        
+        // native ad channel
         let nativeAdFactory = FacebookNativeAdFactory(messenger: registrar.messenger())
-        
         registrar.register(nativeAdFactory, withId: FacebookConstants.NATIVE_AD_CHANNEL)
     }
     
